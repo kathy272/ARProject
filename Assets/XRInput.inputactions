@@ -1,0 +1,34 @@
+{
+    "name": "XRInput",
+    "maps": [
+        {
+            "name": "controls",
+            "id": "a7e14fa7-fe85-42f1-b912-45b8093e09af",
+            "actions": [
+                {
+                    "name": "touch",
+                    "type": "Button",
+                    "id": "cc4505e0-ba61-4810-9b99-d71b90febdd9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e9a3eb83-32f0-49d9-a51d-6b1502a852dc",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "touch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
