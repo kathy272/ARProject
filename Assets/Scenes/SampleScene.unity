@@ -157,6 +157,10 @@ MonoBehaviour:
   loadingImage: {fileID: 0}
   loadingUI: {fileID: 1208986867}
   sceneToLoad: SampleScene
+  imagePath: C:\Users\kendl\OneDrive\Desktop\ARProject\Assets/models/heightmap.png
+  meshPath: C:\Users\kendl\OneDrive\Desktop\ARProject\Assets/Resources/terrain_model.fbx
+  checkInterval: 1
+  timeout: 30
 --- !u!4 &172504237
 Transform:
   m_ObjectHideFlags: 0
@@ -278,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b853798b8a924e44ab12346b4390549f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameObject: {fileID: 919132149155446097, guid: 7b9b5850ea00fa74db35a266e294b909, type: 3}
+  _gameObject: {fileID: 919132149155446097, guid: 9a535f737a3881342b69ae56da5894c0, type: 3}
   m_SpawnVisualizationPrefab: {fileID: 0}
   m_OnlySpawnInView: 1
   m_ViewportPeriphery: 0.15

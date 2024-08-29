@@ -1177,6 +1177,7 @@ GameObject:
   - component: {fileID: 1990959186}
   - component: {fileID: 1990959185}
   - component: {fileID: 1990959184}
+  - component: {fileID: 1990959188}
   - component: {fileID: 1990959187}
   m_Layer: 5
   m_Name: ContinueButton
@@ -1248,7 +1249,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1990959185}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1990959185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1294,7 +1307,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1990959182}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 346e973f9ac45d645bf029af6939ffba, type: 3}
   m_Name: 
@@ -1302,6 +1315,22 @@ MonoBehaviour:
   ContinueButton: {fileID: 1990959184}
   imagePath: Assets/models/heightmap.png
   meshPath: Assets/terrain_model.fbx
+  checkInterval: 1
+  timeout: 30
+--- !u!114 &1990959188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1990959182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a95dabc6497398c46a47c8833d38406b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sceneName: Loading
+  ContinueButton: {fileID: 1990959184}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

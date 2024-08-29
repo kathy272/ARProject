@@ -4,6 +4,11 @@ using UnityEngine.UI;
 using TriLibCore;
 using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 using UnityEngine.SceneManagement;
+using System.Diagnostics;
+using System;
+using System.Threading.Tasks;
+using UnityEditor;
+using System.IO;
 
 public class LoadModel : MonoBehaviour
 {
@@ -24,8 +29,16 @@ public class LoadModel : MonoBehaviour
     [SerializeField]
     private string sceneToLoad = "SampleScene";
 
-    private bool isSceneLoaded = false; // Flag to check if the scene has already been loaded
+    private bool isSceneLoaded = false; 
     public static LoadModel Instance { get; private set; }
+
+
+
+    public string imagePath = "C:\\Users\\kendl\\OneDrive\\Desktop\\ARProject\\Assets/models/heightmap.png";
+    public string meshPath = "C:\\Users\\kendl\\OneDrive\\Desktop\\ARProject\\Assets/Resources/terrain_model.fbx";
+    public float checkInterval = 1.0f; // Check every 1 second
+    public float timeout = 30.0f; // Timeout after 30 seconds
+
 
     private void Awake()
     {
@@ -42,14 +55,97 @@ public class LoadModel : MonoBehaviour
     }
     private void Start()
     {
-        // Show the loading UI
-        if (loadingUI != null)
+        GenerateMeshFromImage();
+    }
+    void GenerateMeshFromImage()
+    {
+
+        // Run the Python script in a separate thread
+        Task.Run(() => RunPythonScript());
+
+        // Start checking for the generated FBX file
+        StartCoroutine(CheckForGeneratedMesh());
+
+    }
+    IEnumerator CheckForGeneratedMesh()
+    {
+
+        UnityEngine.Debug.Log("Checking for generated mesh...");
+        float elapsedTime = 0f;
+
+        while (elapsedTime < timeout)
         {
-            loadingUI.SetActive(true);
+            if (File.Exists(meshPath))
+            {
+                // The FBX file is found, refresh assets in the Editor and change the scene
+#if UNITY_EDITOR
+                AssetDatabase.Refresh();
+#endif
+                ModelLoad();
+                yield break;
+            }
+
+            // Wait for the next check interval
+            yield return new WaitForSeconds(checkInterval);
+            AssetDatabase.Refresh();
+
+            elapsedTime += checkInterval;
         }
 
-        ModelLoad();
+        // If the loop exits, it means the file wasn't found within the timeout
+        UnityEngine.Debug.LogError("Failed to find the generated FBX file within the timeout period.");
     }
+
+
+    void RunPythonScript()
+    {
+        string blenderExecutable = @"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe";
+        string scriptPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\blender_script.py";
+        string heightmapPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\models\heightmap.png";
+        string outputPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\Resources\terrain_model.fbx";
+        string pythonPath = @"C:\Python311\python.exe";
+
+        // Build the command string, encapsulated within a script block {}
+        string command = $"\"{blenderExecutable}\" --background --python \"{scriptPath}\" -- \"{heightmapPath}\" \"{outputPath}\"";
+
+        UnityEngine.Debug.Log("Command: " + command);
+
+        ProcessStartInfo processInfo = new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = $"/c \"{command}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        try
+        {
+            using (Process process = Process.Start(processInfo))
+            {
+                process.WaitForExit();
+
+                // Read the output and error streams
+                string result = process.StandardOutput.ReadToEnd();
+                UnityEngine.Debug.Log("Python Output: " + result);
+
+                string error = process.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(error))
+                {
+                    UnityEngine.Debug.LogError("Python Error: " + error);
+                }
+
+                int exitCode = process.ExitCode;
+                UnityEngine.Debug.Log("Process Exit Code: " + exitCode);
+            }
+        }
+        catch (Exception ex)
+        {
+            UnityEngine.Debug.LogError($"Exception: {ex.Message}");
+        }
+    }
+
 
     public void ModelLoad()
     {
@@ -67,7 +163,7 @@ public class LoadModel : MonoBehaviour
         }
 
         GameObject loadedGameObject = assetLoaderContext.RootGameObject;
-        Debug.Log("Model loaded");
+        UnityEngine.Debug.Log("Model loaded");
 
         // Assign the new loaded model
         spawnedObject = loadedGameObject;
@@ -77,7 +173,7 @@ public class LoadModel : MonoBehaviour
 
         if (objectSpawner != null)
         {
-            Debug.Log("ObjectSpawner");
+            UnityEngine.Debug.Log("ObjectSpawner");
             // Optionally interact with the objectSpawner
         }
 
@@ -90,18 +186,21 @@ public class LoadModel : MonoBehaviour
         if (!isSceneLoaded)
         {
             isSceneLoaded = true;
+            AssetDatabase.Refresh();
+
             StartCoroutine(LoadSceneAsync(sceneToLoad));
+            
         }
     }
 
     private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
     {
-        Debug.Log("Materials loaded");
+        UnityEngine.Debug.Log("Materials loaded");
     }
 
     private void OnProgress(AssetLoaderContext assetLoaderContext, float progress)
     {
-        Debug.Log($"Progress: {progress * 100}%");
+        UnityEngine.Debug.Log($"Progress: {progress * 100}%");
 
         if (loadingImage != null)
         {
@@ -112,7 +211,7 @@ public class LoadModel : MonoBehaviour
 
     private void OnError(IContextualizedError contextualizedError)
     {
-        Debug.LogError($"Failed to load model: {contextualizedError.GetInnerException()}");
+        UnityEngine.Debug.LogError($"Failed to load model: {contextualizedError.GetInnerException()}");
 
         // Hide the loading UI
         if (loadingUI != null)
@@ -128,7 +227,7 @@ public class LoadModel : MonoBehaviour
         // Start loading the scene
         AsyncOperation sceneLoading = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         sceneLoading.allowSceneActivation = false;
-        Debug.Log("Loading scene: " + sceneName);
+        UnityEngine.Debug.Log("Loading scene: " + sceneName);
 
         while (sceneLoading.progress < 0.9f)
         {
@@ -142,6 +241,8 @@ public class LoadModel : MonoBehaviour
 
         // Activate the scene once it's fully loaded
         sceneLoading.allowSceneActivation = true;
-        Debug.Log("Scene activation: " + sceneLoading.allowSceneActivation);
+        UnityEngine.Debug.Log("Scene activation: " + sceneLoading.allowSceneActivation);
+        //refresh assets
+
     }
 }

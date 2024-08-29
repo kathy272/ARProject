@@ -12,7 +12,7 @@ public class ImageUploadHandler : MonoBehaviour
     public Button uploadButton;
     public Image previewImage; 
 
-    public string uploadDirectory = "Assets/uploads";
+    public string uploadDirectory = "C:\\Users\\kendl\\OneDrive\\Desktop\\ARProject\\Assets/uploads";
     public Text feedbackText; 
 
     private string imagePath;
@@ -65,8 +65,8 @@ public class ImageUploadHandler : MonoBehaviour
         //string imageFullPath = Path.GetFullPath(imagePath);
         string pythonPath = @"C:\Python311\python.exe";
        // string scriptFullPath = Path.GetFullPath(scriptPath);
-       string scriptFullPath = @"C:\Users\kendl\OneDrive\Documents\UnityProjects\ProjectBA\BAProject_kendlbacher\Assets\generate_heightmap.py";
-        string imageFullPath = @"C:\Users\kendl\OneDrive\Documents\UnityProjects\ProjectBA\BAProject_kendlbacher\Assets\uploads\colored_map.png";
+       string scriptFullPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\generate_heightmap.py";
+        string imageFullPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\uploads\colored_map.png";
 
 
         if (!File.Exists(scriptFullPath))
@@ -78,7 +78,7 @@ public class ImageUploadHandler : MonoBehaviour
         string outputImagePath = Path.Combine(Application.dataPath, "models/heightmap.png");
         //string outputImageFullPath = Path.GetFullPath(outputImagePath);
 
-        string outputImageFullPath = @"C:\Users\kendl\OneDrive\Documents\UnityProjects\ProjectBA\BAProject_kendlbacher\Assets\models";
+        string outputImageFullPath = @"\models";
 
         string command = $"\"{pythonPath}\" \"{scriptFullPath}\" \"{imageFullPath}\" \"{outputImageFullPath}\"";
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,8 +10,10 @@ using UnityEngine.UI;
 public class GenerateMesh : MonoBehaviour
 {
     public Button ContinueButton;
-    public string imagePath = "Assets/models/heightmap.png";
-    public string meshPath = "Assets/Resources/terrain_model.fbx";
+    public string imagePath = "C:\\Users\\kendl\\OneDrive\\Desktop\\ARProject\\Assets/models/heightmap.png";
+    public string meshPath = "C:\\Users\\kendl\\OneDrive\\Desktop\\ARProject\\Assets/Resources/terrain_model.fbx";
+    public float checkInterval = 1.0f; // Check every 1 second
+    public float timeout = 30.0f; // Timeout after 30 seconds
 
     void Start()
     {
@@ -27,14 +28,34 @@ public class GenerateMesh : MonoBehaviour
 
     void GenerateMeshFromImage()
     {
-        // Load the image (heightmap)
-       // string heightmapPath = imagePath;
-
         // Run the Python script asynchronously
         Task.Run(() => RunPythonScript());
-        AssetDatabase.Refresh();
-        //change the scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Loading");
+
+        // Start checking for the generated FBX file
+        StartCoroutine(CheckForGeneratedMesh());
+    }
+
+    IEnumerator CheckForGeneratedMesh()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < timeout)
+        {
+            if (File.Exists(meshPath))
+            {
+                // The FBX file is found, refresh assets and change the scene
+                AssetDatabase.Refresh();
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Loading");
+                yield break;
+            }
+
+            // Wait for the next check interval
+            yield return new WaitForSeconds(checkInterval);
+            elapsedTime += checkInterval;
+        }
+
+        // If the loop exits, it means the file wasn't found within the timeout
+        UnityEngine.Debug.LogError("Failed to find the generated FBX file within the timeout period.");
     }
 
     void RunPythonScript()
@@ -42,19 +63,19 @@ public class GenerateMesh : MonoBehaviour
         string blenderExecutable = @"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe";
         string pythonPath = @"C:\Python311\python.exe";
 
-        string scriptPath = @"C:\Users\kendl\OneDrive\Documents\UnityProjects\ProjectBA\BAProject_kendlbacher\Assets\blender_script.py";
-        string heightmapPath = @"C:\Users\kendl\OneDrive\Documents\UnityProjects\ProjectBA\BAProject_kendlbacher\Assets\models\heightmap.png";
-        string outputPath = @"C:\Users\kendl\OneDrive\Documents\UnityProjects\ProjectBA\BAProject_kendlbacher\Assets\Resources\terrain_model.fbx";
+        string scriptPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\blender_script.py";
+        string heightmapPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\models\heightmap.png";
+        string outputPath = @"C:\Users\kendl\OneDrive\Desktop\ARProject\Assets\Resources\terrain_model.fbx";
 
-        // Build the command string with proper quoting
-        string command = $"\"{blenderExecutable}\" --background --python \"{scriptPath}\" -- \"{heightmapPath}\" \"{outputPath}\"";
+        // Build the command string with PowerShell & operator and correct quotes
+        string command = $"& \"{blenderExecutable}\" --background --python \"{scriptPath}\" -- \"{heightmapPath}\" \"{outputPath}\"";
 
         UnityEngine.Debug.Log("Command: " + command);
 
         ProcessStartInfo processInfo = new ProcessStartInfo
         {
-            FileName = "cmd.exe",
-            Arguments = $"/c \"{command}\"",
+            FileName = "powershell.exe",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -79,7 +100,6 @@ public class GenerateMesh : MonoBehaviour
 
                 int exitCode = process.ExitCode;
                 UnityEngine.Debug.Log("Process Exit Code: " + exitCode);
-            
             }
         }
         catch (Exception ex)
@@ -87,5 +107,4 @@ public class GenerateMesh : MonoBehaviour
             UnityEngine.Debug.LogError($"Exception: {ex.Message}");
         }
     }
-
 }
