@@ -10,6 +10,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     public class ObjectSpawner : MonoBehaviour
     {
         [SerializeField] private GameObject _gameObject;
+        [SerializeField]
+        private string modelPath = "C:\\Users\\kendl\\OneDrive\\Desktop\\ARProject\\Assets/Resources/terrain_model.fbx"; // Path to your model file
         [SerializeField] private GameObject m_SpawnVisualizationPrefab;
         [SerializeField] private bool m_OnlySpawnInView = true;
         [SerializeField] private float m_ViewportPeriphery = 0.15f;
@@ -37,14 +39,18 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         private float m_SpawnedObjectScale = 30f; // Add this field to control the scale of the spawned object
-
-        public bool TrySpawnObject(Vector3 spawnPoint, Vector3 spawnNormal)
+        private void Awake()
         {
+            // turn the fbx model into a game object
+
             if (_gameObject == null)
             {
-                Debug.LogError("Object prefab is not assigned.");
-                return false;
+                Debug.LogError("Failed to load the model at " + modelPath);
             }
+        }
+        public bool TrySpawnObject(Vector3 spawnPoint, Vector3 spawnNormal)
+        {
+        
 
             var newObject = Instantiate(_gameObject);
 

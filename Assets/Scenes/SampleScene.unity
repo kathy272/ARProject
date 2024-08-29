@@ -282,7 +282,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b853798b8a924e44ab12346b4390549f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameObject: {fileID: 919132149155446097, guid: 9a535f737a3881342b69ae56da5894c0, type: 3}
+  _gameObject: {fileID: 919132149155446097, guid: a4450e3aef047e04da5997e887345740, type: 3}
+  modelPath: C:\Users\kendl\OneDrive\Desktop\ARProject\Assets/Resources/terrain_model.fbx
   m_SpawnVisualizationPrefab: {fileID: 0}
   m_OnlySpawnInView: 1
   m_ViewportPeriphery: 0.15
